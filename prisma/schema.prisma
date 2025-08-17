@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MediaFile {
+  id        String   @id @default(uuid())
+  key       String   @unique // S3 object key
+  url       String // Public or signed S3 link
+  filename  String // Original uploaded filename
+  createdAt DateTime @default(now())
+
+  // Relations
+  collections MediaCollection[] // many-to-many with Collection
+  coverOf     Collection?       @relation("CoverImage", fields: [coverOfId], references: [id])
+  coverOfId   String?           @unique
+}
+
+model Collection {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  title     String?
+  sequence  Int      @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  media      MediaCollection[] // ordered media
+  coverImage MediaFile?        @relation("CoverImage")
+}
+
+model MediaCollection {
+  id           String     @id @default(uuid())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  mediaFile    MediaFile  @relation(fields: [mediaFileId], references: [id], onDelete: Cascade)
+  mediaFileId  String
+  sequence     Int
+
+  @@unique([collectionId, mediaFileId]) // prevent duplicates
+  @@index([collectionId, sequence]) // for fast ordered queries
+}
