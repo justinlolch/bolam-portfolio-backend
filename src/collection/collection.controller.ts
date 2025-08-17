@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Logger, Param, Patch, Post, Put} from '@nestjs/common';
 import {CollectionService} from './collection.service';
 import {CreateCollectionDto} from './dto/create-collection.dto';
 import {UpdateCollectionDto} from "./dto/update-collection.dto";

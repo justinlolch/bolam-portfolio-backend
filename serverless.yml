@@ -11,6 +11,10 @@ provider:
   environment:
     NODE_ENV: production
     DATABASE_URL: ${env:DATABASE_URL}
+    ACCESS_KEY_ID: ${env.ACCESS_KEY_ID}
+    SECRET_ACCESS_KEY: ${env.SECRET_ACCESS_KEY}
+    REGION: ${env.REGION}
+    AWS_S3_BUCKET_NAME: ${env.AWS_S3_BUCKET_NAME}
 
 functions:
   bolamApi:
@@ -21,6 +25,14 @@ functions:
           method: ANY
           cors: true
 
+package:
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-openssl-1.0.x.so.node'
+    - 'node_modules/@prisma/client/**'
+    - 'node_modules/.prisma/client/**'
+    - 'prisma/schema.prisma'
+
 build:
   esbuild:
     external:
@@ -28,3 +40,5 @@ build:
       - "@nestjs/microservices"
       - "@nestjs/microservices/microservices-module"
       - "@nestjs/websockets/socket-module"
+      - '@prisma/client'
+  beforeBuild: 'npx prisma generate'

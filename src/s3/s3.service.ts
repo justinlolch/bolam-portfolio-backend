@@ -13,13 +13,11 @@ export class S3Service {
         private readonly configService: ConfigService,
         private readonly prisma: PrismaService,
     ) {
-        console.log("s3 constructor")
-        const accessKeyId = this.configService.get<string>('AWS_ACCESS_KEY_ID');
-        console.log('accessKeyId', accessKeyId); // <---- Add this log
+        const accessKeyId = this.configService.get<string>('ACCESS_KEY_ID');
         this.s3 = new AWS.S3({
-            accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-            secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
-            region: this.configService.get<string>('AWS_REGION'),
+            accessKeyId: this.configService.get<string>('ACCESS_KEY_ID'),
+            secretAccessKey: this.configService.get<string>('SECRET_ACCESS_KEY'),
+            region: this.configService.get<string>('REGION'),
         });
 
         const bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');

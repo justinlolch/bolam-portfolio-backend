@@ -1,19 +1,25 @@
 import { Handler } from 'aws-lambda';
-import serverlessExpress from '@vendia/serverless-express';
-import express from 'express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+import serverlessExpress from '@codegenie/serverless-express';
 
 let cachedServer: Handler;
 
-async function bootstrap() {
+async function bootstrap(): Promise<Handler> {
     const expressApp = express();
+
     const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
 
-    // Prefix all routes with /bolam-portfolio-backend
-    app.setGlobalPrefix('bolam-portfolio-backend');
+    app.enableCors({
+        origin: '*',
+        credentials: false,
+    });
+
+    // Optional: remove or adjust as needed
+    // app.setGlobalPrefix('api');
 
     const config = new DocumentBuilder()
         .setTitle('Bolam API')
@@ -22,17 +28,11 @@ async function bootstrap() {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-
-    SwaggerModule.setup('bolam-portfolio-backend/docs', app, document, {
-        customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
-        customJs: [
-            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
-        ],
-    });
+    SwaggerModule.setup('docs', app, document);
 
     await app.init();
-    return serverlessExpress({ app: expressApp });
+
+    return serverlessExpress({ app: expressApp }); // ✅ app already wired here
 }
 
 export const handler: Handler = async (event, context) => {
