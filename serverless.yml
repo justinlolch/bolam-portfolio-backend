@@ -1,0 +1,30 @@
+org: justinlolch
+app: bolam-portfolio-backend
+service: nest-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+  memorySize: 1024
+  timeout: 10
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: ${env:DATABASE_URL}
+
+functions:
+  bolamApi:
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: bolam-portfolio-backend/{proxy+}
+          method: ANY
+          cors: true
+
+build:
+  esbuild:
+    external:
+      - "class-transformer/storage"
+      - "@nestjs/microservices"
+      - "@nestjs/microservices/microservices-module"
+      - "@nestjs/websockets/socket-module"

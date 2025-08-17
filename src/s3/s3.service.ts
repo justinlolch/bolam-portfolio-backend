@@ -10,15 +10,24 @@ export class S3Service {
     private readonly logger = new Logger(S3Service.name);
 
     constructor(
-        private configService: ConfigService,
-        private prisma: PrismaService,
+        private readonly configService: ConfigService,
+        private readonly prisma: PrismaService,
     ) {
+        console.log("s3 constructor")
+        const accessKeyId = this.configService.get<string>('AWS_ACCESS_KEY_ID');
+        console.log('accessKeyId', accessKeyId); // <---- Add this log
         this.s3 = new AWS.S3({
             accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
             secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
             region: this.configService.get<string>('AWS_REGION'),
         });
-        this.bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME')!!;
+
+        const bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');
+        if (!bucket) {
+            throw new Error('Missing AWS_S3_BUCKET_NAME in environment');
+        }
+
+        this.bucket = bucket;
     }
 
     async uploadFile(file: Express.Multer.File, type: string) {
