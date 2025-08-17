@@ -52,14 +52,8 @@ async function bootstrap() {
         logger: ['error', 'warn', 'log'],
     });
 
-    // CORS: allow local dev + optionally your deployed frontend via env
-    const allowedOrigins = [
-        'http://localhost:5174',
-        "https://bolam-portfolio-frontend-e9jq.vercel.app/",
-        ...(process.env.FRONTEND_ORIGIN ? [process.env.FRONTEND_ORIGIN] : []),
-    ];
     app.enableCors({
-        origin: allowedOrigins,
+        origin: (origin, cb) => cb(null, true),  // allow ALL origins (echoes caller)
         credentials: true,
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         allowedHeaders: 'Content-Type,Authorization',
