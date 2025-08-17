@@ -27,9 +27,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
 
-# <-- bake env into image (LOCAL/DEV ONLY—contains secrets)
-COPY .env .env
-
 EXPOSE 8082
 
 # apply migrations then run app
