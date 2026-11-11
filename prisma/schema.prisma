@@ -46,6 +46,7 @@ model MediaCollection {
   mediaFile    MediaFile  @relation(fields: [mediaFileId], references: [id], onDelete: Cascade)
   mediaFileId  String
   sequence     Int
+  isActive     Boolean    @default(true)
 
   @@unique([collectionId, mediaFileId]) // prevent duplicates
   @@index([collectionId, sequence]) // for fast ordered queries

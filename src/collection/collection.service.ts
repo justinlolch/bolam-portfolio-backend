@@ -55,6 +55,7 @@ export class CollectionService {
                 collection: {connect: {id: collectionId}},
                 mediaFile: {connect: {id: dto.mediaFileId}},
                 sequence: dto.sequence,
+                isActive: true,
             },
         });
 
@@ -70,6 +71,7 @@ export class CollectionService {
             include: {
                 coverImage: true,
                 media: {
+                    where: {isActive: true},
                     orderBy: {sequence: 'asc'},
                     include: {mediaFile: true},
                 },
